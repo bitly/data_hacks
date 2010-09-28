@@ -49,4 +49,12 @@ Filter a stream to a random sub-sample of the stream
 Example:
 
     $ cat access.log | sample.py 10% | post_process.py
-    
+
+run_for.py
+----------
+
+Pass through data for a specified amount of time
+
+Example:
+
+    $ tail -f access.log | run_for.py 10s | post_process.py
