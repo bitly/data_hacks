@@ -8,5 +8,6 @@ setup(name='data_hacks',
       url='http://github.com/bitly/data_analysis',
       # packages=['data_hacks'],
       scripts = ['data_hacks/histogram.py', 
-                'data_hacks/nintey_five_percent.py']
+                'data_hacks/nintey_five_percent.py',
+                'data_hacks/sample.py']
      )

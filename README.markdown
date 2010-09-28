@@ -1,10 +1,15 @@
 data_hacks
-========
+==========
 
 Command line utilities for data analysis
 
-histogram
-=========
+Installing from source:
+
+    pip install -e git://github.com/bitly/data_hacks.git#egg=data_hacks
+
+
+histogram.py
+------------
 
 A utility that parses input data points and outputs a text histogram
 
@@ -25,20 +30,23 @@ Example:
         8.2000 -     9.1000 [     1]: *
         9.1000 -    10.0000 [     1]: *
 
-nintey_five_percent
-===================
+nintey_five_percent.py
+----------------------
 
 A utility script that takes a stream of decimal values and outputs the 95% time.
 
 This is useful for finding the 95% response time from access logs.
 
-Example:
+Example (assuming response time is the last column in your access log):
 
     $ cat access.log | awk '{print $NF}' | nintey_five_percent.py
     
-Installation
-============
+sample.py
+---------
 
-Installing from source:
+Filter a stream to a random sub-sample of the stream
 
-pip install -e git://github.com/bitly/data_hacks.git#egg=data_hacks
+Example:
+
+    $ cat access.log | sample.py 10% | post_process.py
+    
