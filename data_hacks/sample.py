@@ -10,6 +10,7 @@ http://github.com/bitly/data_hacks
 
 import sys
 import random
+from optparse import OptionParser
 from decimal import Decimal
 
 def usage():
@@ -37,22 +38,27 @@ def get_sample_rate(rate_string):
         rate = Decimal(x) / (Decimal(y) * Decimal('1.0'))
         rate = int(rate * 100)
     else:
-        raise Exception("rate %r is invalid rate format must be '10%%' or '1/10'" % rate_string)
+        raise ValueError("rate %r is invalid rate format must be '10%%' or '1/10'" % rate_string)
     if rate < 1 or rate > 100:
-        raise Exception('rate %r must be 1%% <= rate <= 100%% ' % rate_string)
+        raise ValueError('rate %r must be 1%% <= rate <= 100%% ' % rate_string)
     return rate
 
 if __name__ == "__main__":
-    debug = '--debug' in sys.argv
-    try:
-        sys.argv.remove('--debug')
-    except ValueError:
-        pass
-    if '-h' in sys.argv or '--help' in sys.argv or len(sys.argv) != 2:
-        usage()
+    parser = OptionParser()
+    parser.usage = "cat data | %prog [options] [sample_rate]"
+    parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true")
+    (options, args) = parser.parse_args()
+    
+    if not args or sys.stdin.isatty():
+        parser.print_usage()
         sys.exit(1)
     
-    sample_rate = get_sample_rate(sys.argv[-1])
-    if debug:
+    try:
+        sample_rate = get_sample_rate(sys.argv[-1])
+    except ValueError, e:
+        print >>sys.stderr, e
+        parser.print_usage()
+        sys.exit(1)
+    if options.verbose:
         print >>sys.stderr, "Sample rate is %d%%" % sample_rate 
     run(sample_rate)

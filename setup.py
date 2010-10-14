@@ -9,5 +9,6 @@ setup(name='data_hacks',
       # packages=['data_hacks'],
       scripts = ['data_hacks/histogram.py', 
                 'data_hacks/nintey_five_percent.py',
+                'data_hacks/run_for.py',
                 'data_hacks/sample.py']
      )

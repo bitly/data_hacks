@@ -15,6 +15,7 @@ http://github.com/bitly/data_hacks
 import sys
 from decimal import Decimal
 import math
+from optparse import OptionParser
 
 class MVSD(object):
     """ A class that calculates a running Mean / Variance / Standard Deviation"""
@@ -76,14 +77,29 @@ def load_stream(input_stream):
             except:
                 print >>sys.stderr, "invalid line %r" % line
 
-def histogram(stream):
+def histogram(stream, options):
     # we can't iterate on stream because we need to get min/max first and then put it into buckets
-    data = list(stream)
-    buckets = 10
+    if not options.min or not options.max:
+        # glob the data here so we can do min/max on it
+        data = list(stream)
+    else:
+        data = stream
     bucket_scale = 1
     
-    min_v = min(data)
-    max_v = max(data)
+    if options.min:
+        min_v = Decimal(options.min)
+    else:
+        min_v = min(data)
+    if options.max:
+        max_v = Decimal(options.max)
+    else:
+        max_v = max(data)
+    buckets = options.buckets and int(options.buckets) or 10
+    if buckets <= 0:
+        raise ValueError('# of buckets must be > 0')
+    if not max_v > min_v:
+        raise ValueError('max must be > min. max:%s min:%s' % (max_v, min_v))
+        
     diff = max_v - min_v
     step = diff / buckets
     bucket_counts = [0 for x in range(buckets)]
@@ -91,21 +107,31 @@ def histogram(stream):
     for x in range(buckets):
         boundaries.append(min_v + (step * (x + 1)))
     
+    skipped = 0
+    samples = 0
     mvsd = MVSD()
     for value in data:
-        mvsd.add(value)
+        samples +=1
+        if options.mvsd:
+            mvsd.add(value)
         # find the bucket this goes in
+        if value < min_v or value > max_v:
+            skipped +=1
+            continue
         for bucket_postion, boundary in enumerate(boundaries):
             if value <= boundary:
                 bucket_counts[bucket_postion] +=1
                 break
     
-    # auto-pick the bucket size
+    # auto-pick the hash scale
     if max(bucket_counts) > 75:
         bucket_scale = int(max(bucket_counts) / 75)
     
-    print "# NumSamples = %d; Max = %0.2f; Min = %0.2f" % (len(data), max_v, min_v)
-    print "# Mean = %f; Variance = %f; SD = %f" % (mvsd.mean(), mvsd.var(), mvsd.sd())
+    print "# NumSamples = %d; Min = %0.2f; Max = %0.2f" % (samples, min_v, max_v)
+    if skipped:
+        print "# %d value%s outside of min/max" % (skipped, skipped > 1 and 's' or '')
+    if options.mvsd:
+        print "# Mean = %f; Variance = %f; SD = %f" % (mvsd.mean(), mvsd.var(), mvsd.sd())
     print "# each * represents a count of %d" % bucket_scale
     bucket_min = min_v
     bucket_max = min_v
@@ -120,4 +146,22 @@ def histogram(stream):
         
 
 if __name__ == "__main__":
-    histogram(load_stream(sys.stdin))
+    parser = OptionParser()
+    parser.usage = "cat data | %prog [options]"
+    parser.add_option("-m", "--min", dest="min",
+                        help="minimum value for graph")
+    parser.add_option("-x", "--max", dest="max",
+                        help="maximum value for graph")
+    parser.add_option("-b", "--buckets", dest="buckets",
+                        help="Number of buckets to use for the histogram")
+    parser.add_option("--no-mvsd", dest="mvsd", action="store_false", default=True,
+                        help="Dissable the calculation of Mean, Vairance and SD. (improves performance)")
+
+    (options, args) = parser.parse_args()
+    if sys.stdin.isatty():
+        # if isatty() that means it's run without anything piped into it
+        parser.print_usage()
+        print "for more help use --help"
+        sys.exit(1)
+    histogram(load_stream(sys.stdin), options)
+

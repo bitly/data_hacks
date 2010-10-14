@@ -8,6 +8,7 @@ Copyright (c) 2010 bit.ly. All rights reserved.
 http://github.com/bitly/data_hacks
 """
 import sys
+import os
 from decimal import Decimal
 
 def run():
@@ -42,4 +43,7 @@ def calc_95(data, count):
             return t
 
 if __name__ == "__main__":
+    if sys.stdin.isatty():
+        print "Usage: cat data | %(prog)s" % os.path.basename(sys.argv[0])
+        sys.exit(1)
     run()
