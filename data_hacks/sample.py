@@ -1,9 +1,21 @@
 #!/bin/env python
+# 
+# Copyright 2010 bit.ly
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
 """
 Pass through a sampled percentage of data
-
-created by Jehiah Czebotar 2010-09-27
-Copyright (c) 2010 bit.ly. All rights reserved.
 
 http://github.com/bitly/data_hacks
 """
@@ -12,13 +24,6 @@ import sys
 import random
 from optparse import OptionParser
 from decimal import Decimal
-
-def usage():
-    print """
-    usage:
-        cat data | sample.py 10% | sort | uniq -c
-        cat data | sample.py 1/50 | sort | uniq -c
-"""
 
 def run(sample_rate):
     input_stream = sys.stdin
@@ -44,9 +49,8 @@ def get_sample_rate(rate_string):
     return rate
 
 if __name__ == "__main__":
-    parser = OptionParser()
-    parser.usage = "cat data | %prog [options] [sample_rate]"
-    parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true")
+    parser = OptionParser(usage="cat data | %prog [options] [sample_rate]")
+    parser.add_option("--verbose", dest="verbose", default=False, action="store_true")
     (options, args) = parser.parse_args()
     
     if not args or sys.stdin.isatty():

@@ -1,15 +1,26 @@
 #!/bin/env python
+# 
+# Copyright 2010 bit.ly
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
 """
-Generate a text format histogram 
+Generate a text format histogram
 
 This is a loose port to python of the Perl version at
 http://www.pandamatak.com/people/anand/xfer/histo
 
-created by Jehiah Czebotar 2010-09-27
-Copyright (c) 2010 bit.ly. All rights reserved.
-
 http://github.com/bitly/data_hacks
-
 """
 
 import sys
@@ -26,7 +37,9 @@ class MVSD(object):
         self.total_w = Decimal(0) # weight of items seen
         
     def add(self, x, w=1):
-        x = x * Decimal('1.0')
+        """ add another datapoint to the Mean / Variance / Standard Deviation"""
+        if not isinstance(x, Decimal):
+            x = Decimal(x)
         if not self.is_started:
             self.m = x
             self.ss = Decimal(0)
@@ -64,23 +77,25 @@ def load_stream(input_stream):
         line = input_stream.readline()
         if not line:
             break
-        line = line.strip()
-        if not line:
+        clean_line = line.strip()
+        if not clean_line:
             # skip empty lines (ie: newlines)
             continue
+        if clean_line[0] in ['"', "'"]:
+            clean_line = clean_line.strip('"').strip("'")
         try:
-            yield Decimal(line)
+            yield Decimal(clean_line)
         except:
-            try:
-                line = line.strip('"').strip("'")
-                yield Decimal(line)
-            except:
-                print >>sys.stderr, "invalid line %r" % line
+            print >>sys.stderr, "invalid line %r" % line
 
 def histogram(stream, options):
-    # we can't iterate on stream because we need to get min/max first and then put it into buckets
+    """
+    Loop over the stream and add each entry to the dataset, printing out at the end
+    
+    stream yields Decimal() 
+    """
     if not options.min or not options.max:
-        # glob the data here so we can do min/max on it
+        # glob the iterator here so we can do min/max on it
         data = list(stream)
     else:
         data = stream

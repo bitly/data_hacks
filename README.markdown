@@ -3,10 +3,11 @@ data_hacks
 
 Command line utilities for data analysis
 
-Installing from source:
+Installing: `pip install data_hacks`
 
-    pip install -e git://github.com/bitly/data_hacks.git#egg=data_hacks
+Installing form github `pip install -e git://github.com/bitly/data_hacks.git#egg=data_hacks`
 
+Installing from source `python setup.py install`
 
 histogram.py
 ------------
