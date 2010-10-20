@@ -1,12 +1,19 @@
 from distutils.core import setup
 
+version = "0.1"
 setup(name='data_hacks',
-      version='0.1',
+      version=version,
       description='Command line utilities for data analysis',
-      author='bitly',
-      author_email='support@bit.ly',
+      author='Jehiah Czebotar',
+      author_email='jehiah@gmail.com',
       url='http://github.com/bitly/data_analysis',
-      # packages=['data_hacks'],
+      classifiers=[
+            'Development Status :: 4 - Beta',
+            'Programming Language :: Python',
+            'Intended Audience :: System Administrators',
+            'Topic :: Terminals',
+            ],
+      download_url="http://github.com/downloads/bitly/data_hacks/data_hacks-%s.tar.gz" % version,
       scripts = ['data_hacks/histogram.py', 
                 'data_hacks/nintey_five_percent.py',
                 'data_hacks/run_for.py',
