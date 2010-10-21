@@ -56,7 +56,7 @@ def calc_95(data, count):
             return t
 
 if __name__ == "__main__":
-    if sys.stdin.isatty():
-        print "Usage: cat data | %(prog)s" % os.path.basename(sys.argv[0])
+    if sys.stdin.isatty() or '--help' in sys.argv or '-h' in sys.argv:
+        print "Usage: cat data | %s" % os.path.basename(sys.argv[0])
         sys.exit(1)
     run()

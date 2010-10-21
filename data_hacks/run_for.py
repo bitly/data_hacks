@@ -51,8 +51,8 @@ def run(runtime):
             return
 
 if __name__ == "__main__":
-    usage = "Usage: tail -f access.log | %(prog)s [time] | ..." % os.path.basename(sys.argv[0])
-    help = "time can be in the format 10s 10m 10h etc"
+    usage = "Usage: tail -f access.log | %s [time] | ..." % os.path.basename(sys.argv[0])
+    help = "time can be in the format 10s, 10m, 10h, etc"
     if sys.stdin.isatty():
         print usage
         print help

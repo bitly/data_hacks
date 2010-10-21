@@ -9,6 +9,8 @@ Installing form github `pip install -e git://github.com/bitly/data_hacks.git#egg
 
 Installing from source `python setup.py install`
 
+data_hacks are friendly. Ask them for usage information with `--help`
+
 histogram.py
 ------------
 
