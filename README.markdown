@@ -33,7 +33,7 @@ Example:
         8.2000 -     9.1000 [     1]: *
         9.1000 -    10.0000 [     1]: *
 
-nintey_five_percent.py
+ninety_five_percent.py
 ----------------------
 
 A utility script that takes a stream of decimal values and outputs the 95% time.
@@ -42,7 +42,7 @@ This is useful for finding the 95% response time from access logs.
 
 Example (assuming response time is the last column in your access log):
 
-    $ cat access.log | awk '{print $NF}' | nintey_five_percent.py
+    $ cat access.log | awk '{print $NF}' | ninety_five_percent.py
     
 sample.py
 ---------
