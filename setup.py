@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-version = "0.1"
+version = "0.2"
 setup(name='data_hacks',
       version=version,
       description='Command line utilities for data analysis',
@@ -17,5 +17,6 @@ setup(name='data_hacks',
       scripts = ['data_hacks/histogram.py', 
                 'data_hacks/nintey_five_percent.py',
                 'data_hacks/run_for.py',
+                'data_hacks/bar_chart.py',
                 'data_hacks/sample.py']
      )
