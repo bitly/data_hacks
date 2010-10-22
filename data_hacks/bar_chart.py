@@ -55,14 +55,17 @@ def run(input_stream, options):
     
     print "# each * represents a count of %d" % scale
     
-    if options.sort_keys:
-        data = [[key,value] for key,value in data.items()]
-        data.sort()
-        data = [[value, key] for key,value in data]
-    else:
+    if options.sort_values:
         # sort by values
         data = [[value,key] for key,value in data.items()]
-        data.sort(reverse=True)
+        if options.reverse_sort:
+            data.sort(reverse=True)
+        else:
+            data.sort()
+    else:
+        data = [[key,value] for key,value in data.items()]
+        data.sort(reverse=options.reverse_sort)
+        data = [[value, key] for key,value in data]
     format = "%" + str(max_length) + "s [%6d] %s"
     for value,key in data:
         print format % (key[:max_length], value, (value / scale) * "*")
@@ -74,6 +77,8 @@ if __name__ == "__main__":
                         help="sort by the key [default]")
     parser.add_option("-v", "--sort-values", dest="sort_values", default=False, action="store_true",
                         help="sort by the frequence")
+    parser.add_option("-r", "--reverse-sort", dest="reverse_sort", default=False, action="store_true",
+                        help="reverse the sort")
     
     (options, args) = parser.parse_args()
     
