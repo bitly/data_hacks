@@ -31,11 +31,11 @@ def run(sample_rate):
         line = input_stream.readline()
         if not line:
             break
-        if random.randint(1,100) < sample_rate:
+        if random.randint(1,100) <= sample_rate:
             sys.stdout.write(line)
 
 def get_sample_rate(rate_string):
-    """ return a rate as a percewntage"""
+    """ return a rate as a percentage"""
     if rate_string.endswith("%"):
         rate = int(rate_string[:-1])
     elif '/' in rate_string:
