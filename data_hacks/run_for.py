@@ -42,10 +42,7 @@ def getruntime(arg):
 
 def run(runtime):
     end = time.time() + runtime
-    while True:
-        line = sys.stdin.readline()
-        if not line:
-            break
+    for line in sys.stdin:
         sys.stdout.write(line)
         if time.time() > end:
             return
