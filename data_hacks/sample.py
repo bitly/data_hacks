@@ -27,10 +27,7 @@ from decimal import Decimal
 
 def run(sample_rate):
     input_stream = sys.stdin
-    while True:
-        line = input_stream.readline()
-        if not line:
-            break
+    for line in input_stream:
         if random.randint(1,100) <= sample_rate:
             sys.stdout.write(line)
 
