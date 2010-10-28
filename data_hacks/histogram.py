@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/python
 # 
 # Copyright 2010 bit.ly
 #
@@ -71,7 +71,6 @@ def test_mvsd():
     assert '%.2f' % mvsd.var() == "8.25"
     assert '%.14f' % mvsd.sd() == "2.87228132326901"
 
-
 def load_stream(input_stream):
     while True:
         line = input_stream.readline()
@@ -87,6 +86,22 @@ def load_stream(input_stream):
             yield Decimal(clean_line)
         except:
             print >>sys.stderr, "invalid line %r" % line
+
+def median(values):
+    length = len(values)
+    if length%2:
+        median_indeces = [length/2]
+    else:
+        median_indeces = [length/2-1, length/2]
+
+    values = sorted(values)
+    return sum([values[i] for i in median_indeces]) / len(median_indeces)
+
+def test_median():
+    assert 6 == median([8,7,9,1,2,6,3]) # odd-sized list
+    assert 4 == median([4,5,2,1,9,10]) # even-sized int list. (4+5)/2 = 4
+    assert "4.50" == "%.2f" % median([4.0,5,2,1,9,10]) #even-sized float list. (4.0+5)/2 = 4.5
+
 
 def histogram(stream, options):
     """
@@ -125,10 +140,12 @@ def histogram(stream, options):
     skipped = 0
     samples = 0
     mvsd = MVSD()
+    accepted_data = []
     for value in data:
         samples +=1
         if options.mvsd:
             mvsd.add(value)
+            accepted_data.append(value)
         # find the bucket this goes in
         if value < min_v or value > max_v:
             skipped +=1
@@ -146,7 +163,7 @@ def histogram(stream, options):
     if skipped:
         print "# %d value%s outside of min/max" % (skipped, skipped > 1 and 's' or '')
     if options.mvsd:
-        print "# Mean = %f; Variance = %f; SD = %f" % (mvsd.mean(), mvsd.var(), mvsd.sd())
+        print "# Mean = %f; Variance = %f; SD = %f; Median %f" % (mvsd.mean(), mvsd.var(), mvsd.sd(), median(accepted_data))
     print "# each * represents a count of %d" % bucket_scale
     bucket_min = min_v
     bucket_max = min_v
