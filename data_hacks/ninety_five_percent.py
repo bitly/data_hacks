@@ -27,10 +27,7 @@ from decimal import Decimal
 def run():
     count = 0
     data = {}
-    while True:
-        line = sys.stdin.readline()
-        if not line:
-            break
+    for line in sys.stdin:
         line = line.strip()
         if not line:
             # skip empty lines (ie: newlines)

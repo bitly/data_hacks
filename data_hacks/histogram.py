@@ -72,10 +72,7 @@ def test_mvsd():
     assert '%.14f' % mvsd.sd() == "2.87228132326901"
 
 def load_stream(input_stream):
-    while True:
-        line = input_stream.readline()
-        if not line:
-            break
+    for line in input_stream:
         clean_line = line.strip()
         if not clean_line:
             # skip empty lines (ie: newlines)

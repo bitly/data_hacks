@@ -24,10 +24,7 @@ from collections import defaultdict
 from optparse import OptionParser
 
 def load_stream(input_stream):
-    while True:
-        line = input_stream.readline()
-        if not line:
-            break
+    for line in input_stream:
         clean_line = line.strip()
         if not clean_line:
             # skip empty lines (ie: newlines)
