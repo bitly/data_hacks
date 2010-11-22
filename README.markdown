@@ -5,7 +5,7 @@ Command line utilities for data analysis
 
 Installing: `pip install data_hacks`
 
-Installing form github `pip install -e git://github.com/bitly/data_hacks.git#egg=data_hacks`
+Installing from github `pip install -e git://github.com/bitly/data_hacks.git#egg=data_hacks`
 
 Installing from source `python setup.py install`
 
