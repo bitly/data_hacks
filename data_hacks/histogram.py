@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/bin/env python
 # 
 # Copyright 2010 bit.ly
 #
