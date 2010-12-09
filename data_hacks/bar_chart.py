@@ -20,6 +20,7 @@ Generate an ascii bar chart for input data
 http://github.com/bitly/data_hacks
 """
 import sys
+import math
 from collections import defaultdict
 from optparse import OptionParser
 
@@ -47,7 +48,7 @@ def run(input_stream, options):
     max_length = min(max_length, 50)
     value_characters = 80 - max_length
     max_value = max(data.values())
-    scale = int(float(max_value) / value_characters)
+    scale = int(math.ceil(float(max_value) / value_characters))
     scale = max(1, scale)
     
     print "# each * represents a count of %d" % scale
