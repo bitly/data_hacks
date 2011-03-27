@@ -83,3 +83,26 @@ Generate an ascii bar chart for input data (this is like a visualization of `uni
     20:5 [    79] ***************************************
     21:0 [    64] ********************************
     21:1 [     8] ****
+
+bar_chart.py also supports aggregated values. Simply provide a two column text file, space seperated and run like so:
+
+    $ cat ./data 
+    1 1
+    2 1
+    3 11
+    3 5
+    4 5
+    5 7
+    5 8
+    6 5
+    6 1
+    $ cat ./data | bar_chart.py -a
+    # each * represents a count of 1
+    1 [     1] *
+    2 [     1] *
+    3 [    16] ****************
+    4 [     5] *****
+    5 [    15] ***************
+    6 [     6] ******
+
+This is very convenient if you pull data out, say Hadoop or MySQL already aggregated.
