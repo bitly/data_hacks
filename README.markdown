@@ -83,3 +83,9 @@ Generate an ascii bar chart for input data (this is like a visualization of `uni
     20:5 [    79] ***************************************
     21:0 [    64] ********************************
     21:1 [     8] ****
+
+bar_chart.py also supports ingesting aggregated values. Simply provide a two column input of key<space>value:
+
+    $ cat data | uniq -c | bar_chart.py --sort-keys --agg-values
+
+This is very convenient if you pull data out, say Hadoop or MySQL already aggregated.
