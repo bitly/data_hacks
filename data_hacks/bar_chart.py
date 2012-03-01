@@ -61,7 +61,6 @@ def run(input_stream, options):
     else:
         # sort by keys
         data = [[key,value] for key,value in data.items()]
-        #data.sort()
         if options.numeric_sort:
              data.sort(key=lambda x: (int(x[0])), reverse=options.reverse_sort)
         else:
