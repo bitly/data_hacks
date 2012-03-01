@@ -23,6 +23,7 @@ import sys
 import math
 from collections import defaultdict
 from optparse import OptionParser
+from decimal import Decimal
 
 def load_stream(input_stream):
     for line in input_stream:
@@ -38,11 +39,11 @@ def load_stream(input_stream):
 def run(input_stream, options):
     data = defaultdict(lambda:0)
     for row in input_stream:
-	if options.agg_values:
-		kv = row.split(' ',2);
-		data[kv[0]]+= int(kv[1])
-	if not options.agg_values:
-		data[row]+=1
+        if options.agg_values:
+            kv = row.split(' ',2);
+            data[kv[0]]+= int(kv[1])
+        else:
+            data[row]+=1
     
     if not data:
         print "Error: no data"
@@ -58,16 +59,17 @@ def run(input_stream, options):
     print "# each * represents a count of %d" % scale
     
     if options.sort_values:
-        # sort by values
-        data = [[value,key] for key,value in data.items()]
-        if options.reverse_sort:
-            data.sort(reverse=True)
-        else:
-            data.sort()
+        data = [[value, key] for key, value in data.items()]
+        data.sort(key=lambda x: x[0], reverse=options.reverse_sort)
     else:
-        data = [[key,value] for key,value in data.items()]
-        data.sort(reverse=options.reverse_sort)
-        data = [[value, key] for key,value in data]
+        # sort by keys
+        data = [[value, key] for key, value in data.items()]
+        if options.numeric_sort:
+            # keys could be numeric too
+            data.sort(key=lambda x: (Decimal(x[1])), reverse=options.reverse_sort)
+        else:
+            data.sort(key=lambda x: x[1], reverse=options.reverse_sort)
+    
     format = "%" + str(max_length) + "s [%6d] %s"
     for value,key in data:
         print format % (key[:max_length], value, (value / scale) * "*")
@@ -83,6 +85,8 @@ if __name__ == "__main__":
                         help="sort by the frequence")
     parser.add_option("-r", "--reverse-sort", dest="reverse_sort", default=False, action="store_true",
                         help="reverse the sort")
+    parser.add_option("-n", "--numeric-sort", dest="numeric_sort", default=False, action="store_true",
+                        help="sort keys by numeric sequencing")
     
     (options, args) = parser.parse_args()
     
