@@ -46,8 +46,9 @@ def run(input_stream, options):
     
     max_length = max([len(key) for key in data.keys()])
     max_length = min(max_length, options.key_length)
-    value_characters = options.width - max_length - 10 # ' [%6d] '
     max_value = max(data.values())
+    max_value_length = len(str(max_value))
+    value_characters = options.width - max_length - max_value_length
     scale = int(math.ceil(float(max_value) / value_characters))
     scale = max(1, scale)
     
@@ -65,7 +66,8 @@ def run(input_stream, options):
         data.sort(reverse=options.reverse_sort)
         data = [[value, key] for key,value in data]
     justification = "-" if options.justification == "left" else ""
-    format = "%" + justification + str(max_length) + "s [%6d] %s"
+    format = ("%" + justification + str(max_length) + "s [%" +
+              str(max_value_length) + "d] %s")
     for value,key in data:
         print format % (key[:max_length], value, (value / scale) * "*")
 
