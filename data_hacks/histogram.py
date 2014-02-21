@@ -121,19 +121,43 @@ def histogram(stream, options):
         max_v = Decimal(options.max)
     else:
         max_v = max(data)
-    buckets = options.buckets and int(options.buckets) or 10
-    if buckets <= 0:
-        raise ValueError('# of buckets must be > 0')
+
     if not max_v > min_v:
         raise ValueError('max must be > min. max:%s min:%s' % (max_v, min_v))
-        
     diff = max_v - min_v
-    step = diff / buckets
-    bucket_counts = [0 for x in range(buckets)]
+
     boundaries = []
-    for x in range(buckets):
-        boundaries.append(min_v + (step * (x + 1)))
-    
+    bucket_counts = []
+    buckets = 0
+
+    if options.custbuckets:
+        bound = options.custbuckets.split(',')
+        bound_sort = sorted(map(Decimal, bound))
+
+        # if the last value is smaller than the maximum, replace it
+        if bound_sort[-1] < max_v:
+            bound_sort[-1] = max_v
+        
+        # iterate through the sorted list and append to boundaries
+        for x in bound_sort:
+            if x >= min_v and x <= max_v:
+                boundaries.append(x)
+            elif x >= max_v:
+                boundaries.append(max_v)
+                break
+
+        # beware: the min_v is not included in the boundaries, so no need to do a -1!
+        bucket_counts = [0 for x in range(len(boundaries))]
+        buckets = len(boundaries)
+    else:
+        buckets = options.buckets and int(options.buckets) or 10
+        if buckets <= 0:
+            raise ValueError('# of buckets must be > 0')
+        step = diff / buckets
+        bucket_counts = [0 for x in range(buckets)]
+        for x in range(buckets):
+            boundaries.append(min_v + (step * (x + 1)))
+
     skipped = 0
     samples = 0
     mvsd = MVSD()
@@ -183,6 +207,8 @@ if __name__ == "__main__":
                         help="maximum value for graph")
     parser.add_option("-b", "--buckets", dest="buckets",
                         help="Number of buckets to use for the histogram")
+    parser.add_option("-B", "--custom-buckets", dest="custbuckets",
+                        help="Comma seperated list of bucket edges for the histogram")
     parser.add_option("--no-mvsd", dest="mvsd", action="store_false", default=True,
                         help="Dissable the calculation of Mean, Vairance and SD. (improves performance)")
 
