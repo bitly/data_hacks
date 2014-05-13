@@ -20,5 +20,5 @@ setup(name='data_hacks',
                 'data_hacks/ninety_five_percent.py',
                 'data_hacks/run_for.py',
                 'data_hacks/bar_chart.py',
-                'data_hacks/sample.py']
+                'data_hacks/sample.py'],
      )
