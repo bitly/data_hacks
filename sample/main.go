@@ -10,7 +10,8 @@ import (
 )
 
 func main() {
-
+	var total int64
+	var emitted int64
 	if len(os.Args) != 2 {
 		fmt.Fprintf(os.Stderr, "invalid argument. use a fraction to sample between 0.0 (no sampling) and 1.0 (100% sampling)")
 		os.Exit(1)
@@ -25,13 +26,17 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
+		total += 1
 		if target < rand.Float64() {
 			continue
 		}
+		emitted += 1
 		fmt.Printf("%q", scanner.Text()) // Println will add back the final '\n'
 	}
 	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "reading standard input:", err)
+		fmt.Fprintln(os.Stderr, "Error reading standard input:", err)
 		os.Exit(2)
 	}
+
+	fmt.Fprintf(os.Stderr, "Total of %d lines. Sampled to %d\n", total, emitted)
 }
