@@ -23,6 +23,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	out := bufio.NewWriterSize(os.Stdout, 1024*512)
+
 	rand.Seed(time.Now().UnixNano())
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
@@ -31,12 +33,13 @@ func main() {
 			continue
 		}
 		emitted += 1
-		fmt.Printf("%q", scanner.Text()) // Println will add back the final '\n'
+		out.WriteString(scanner.Text())
+		out.WriteString("\n")
 	}
 	if err := scanner.Err(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error reading standard input:", err)
 		os.Exit(2)
 	}
-
+	out.Flush()
 	fmt.Fprintf(os.Stderr, "Total of %d lines. Sampled to %d\n", total, emitted)
 }
