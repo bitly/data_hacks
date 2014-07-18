@@ -210,7 +210,7 @@ if __name__ == "__main__":
     parser.add_option("-B", "--custom-buckets", dest="custbuckets",
                         help="Comma seperated list of bucket edges for the histogram")
     parser.add_option("--no-mvsd", dest="mvsd", action="store_false", default=True,
-                        help="Dissable the calculation of Mean, Vairance and SD. (improves performance)")
+                        help="Disable the calculation of Mean, Variance and SD (improves performance)")
 
     (options, args) = parser.parse_args()
     if sys.stdin.isatty():
