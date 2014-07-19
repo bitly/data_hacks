@@ -38,7 +38,11 @@ def load_stream(input_stream):
 def run(input_stream, options):
     data = defaultdict(lambda:0)
     for row in input_stream:
-        data[row]+=1
+	if options.agg_values:
+		kv = row.split(' ',2);
+		data[kv[0]]+= int(kv[1])
+	if not options.agg_values:
+		data[row]+=1
     
     if not data:
         print "Error: no data"
@@ -71,6 +75,8 @@ def run(input_stream, options):
 if __name__ == "__main__":
     parser = OptionParser()
     parser.usage = "cat data | %prog [options]"
+    parser.add_option("-a", "--agg-values", dest="agg_values", default=False, action="store_true",
+                        help="Two column input format, space seperated with key<space>value")
     parser.add_option("-k", "--sort-keys", dest="sort_keys", default=True, action="store_true",
                         help="sort by the key [default]")
     parser.add_option("-v", "--sort-values", dest="sort_values", default=False, action="store_true",
