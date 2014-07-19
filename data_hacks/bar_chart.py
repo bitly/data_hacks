@@ -45,9 +45,10 @@ def run(input_stream, options):
         sys.exit(1)
     
     max_length = max([len(key) for key in data.keys()])
-    max_length = min(max_length, 50)
-    value_characters = 80 - max_length
+    max_length = min(max_length, options.key_length)
     max_value = max(data.values())
+    max_value_length = len(str(max_value))
+    value_characters = options.width - max_length - max_value_length
     scale = int(math.ceil(float(max_value) / value_characters))
     scale = max(1, scale)
     
@@ -64,7 +65,9 @@ def run(input_stream, options):
         data = [[key,value] for key,value in data.items()]
         data.sort(reverse=options.reverse_sort)
         data = [[value, key] for key,value in data]
-    format = "%" + str(max_length) + "s [%6d] %s"
+    justification = "-" if options.justification == "left" else ""
+    format = ("%" + justification + str(max_length) + "s [%" +
+              str(max_value_length) + "d] %s")
     for value,key in data:
         print format % (key[:max_length], value, (value / scale) * "*")
 
@@ -77,6 +80,12 @@ if __name__ == "__main__":
                         help="sort by the frequence")
     parser.add_option("-r", "--reverse-sort", dest="reverse_sort", default=False, action="store_true",
                         help="reverse the sort")
+    parser.add_option("-j", "--justification", dest="justification", default="right", action="store",
+                        help="output justification of keys [right]")
+    parser.add_option("-l", "--key-length", dest="key_length", type="int", default=50, action="store",
+                        help="output length of keys [50]")
+    parser.add_option("-w", "--width", dest="width", type="int", default=80, action="store",
+                        help="output width of chart [80]")
     
     (options, args) = parser.parse_args()
     
