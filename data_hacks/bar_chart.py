@@ -59,15 +59,18 @@ def run(input_stream, options):
     
     if options.sort_values:
         # sort by values
-        data = [[value,key] for key,value in data.items()]
-        if options.reverse_sort:
-            data.sort(reverse=True)
-        else:
-            data.sort()
-    else:
         data = [[key,value] for key,value in data.items()]
-        data.sort(reverse=options.reverse_sort)
+        data.sort(key=lambda x: (int(x[1])), reverse=options.reverse_sort)
         data = [[value, key] for key,value in data]
+    else:
+        # sort by keys
+        data = [[key,value] for key,value in data.items()]
+        if options.numeric_sort:
+             data.sort(key=lambda x: (int(x[0])), reverse=options.reverse_sort)
+        else:
+             data.sort(reverse=options.reverse_sort)
+        data = [[value, key] for key,value in data]
+        
     format = "%" + str(max_length) + "s [%6d] %s"
     for value,key in data:
         print format % (key[:max_length], value, (value / scale) * "*")
@@ -83,6 +86,8 @@ if __name__ == "__main__":
                         help="sort by the frequence")
     parser.add_option("-r", "--reverse-sort", dest="reverse_sort", default=False, action="store_true",
                         help="reverse the sort")
+   parser.add_option("-n", "--numeric-sort", dest="numeric_sort", default=False, action="store_true",
+                        help="sort by numeric sequencing")
     
     (options, args) = parser.parse_args()
     
