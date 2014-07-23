@@ -56,7 +56,7 @@ def run(input_stream, options):
     scale = int(math.ceil(float(max_value) / value_characters))
     scale = max(1, scale)
     
-    print "# each * represents a count of %d" % scale
+    print "# each ∎ represents a count of %d" % scale
     
     if options.sort_values:
         data = [[value, key] for key, value in data.items()]
@@ -72,7 +72,7 @@ def run(input_stream, options):
     
     format = "%" + str(max_length) + "s [%6d] %s"
     for value,key in data:
-        print format % (key[:max_length], value, (value / scale) * "*")
+        print format % (key[:max_length], value, (value / scale) * "∎")
 
 if __name__ == "__main__":
     parser = OptionParser()
