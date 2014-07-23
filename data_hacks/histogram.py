@@ -185,7 +185,7 @@ def histogram(stream, options):
         print "# %d value%s outside of min/max" % (skipped, skipped > 1 and 's' or '')
     if options.mvsd:
         print "# Mean = %f; Variance = %f; SD = %f; Median %f" % (mvsd.mean(), mvsd.var(), mvsd.sd(), median(accepted_data))
-    print "# each * represents a count of %d" % bucket_scale
+    print "# each ∎ represents a count of %d" % bucket_scale
     bucket_min = min_v
     bucket_max = min_v
     for bucket in range(buckets):
@@ -195,7 +195,7 @@ def histogram(stream, options):
         star_count = 0
         if bucket_count:
             star_count = bucket_count / bucket_scale
-        print '%10.4f - %10.4f [%6d]: %s' % (bucket_min, bucket_max, bucket_count, '*' * star_count)
+        print '%10.4f - %10.4f [%6d]: %s' % (bucket_min, bucket_max, bucket_count, '∎' * star_count)
         
 
 if __name__ == "__main__":
