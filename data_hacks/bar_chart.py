@@ -20,8 +20,9 @@ Generate an ascii bar chart for input data
 
 http://github.com/bitly/data_hacks
 """
-import sys
 import math
+import re
+import sys
 from collections import defaultdict
 from optparse import OptionParser
 from decimal import Decimal
@@ -38,10 +39,11 @@ def load_stream(input_stream):
             yield clean_line
 
 def run(input_stream, options):
+    p = re.compile(' +')
     data = defaultdict(lambda:0)
     for row in input_stream:
         if options.agg_values:
-            kv = row.split(' ',2);
+            kv = p.split(row, 2);
             data[kv[0]]+= int(kv[1])
         else:
             data[row]+=1
