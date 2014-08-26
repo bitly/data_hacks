@@ -41,7 +41,7 @@ def run(input_stream, options):
     data = defaultdict(lambda:0)
     for row in input_stream:
         if options.agg_values:
-            kv = row.split(' ',2);
+            kv = row.replace('\t', ' ').split(' ',2);
             data[kv[0]]+= int(kv[1])
         else:
             data[row]+=1

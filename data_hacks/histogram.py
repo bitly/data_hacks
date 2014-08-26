@@ -26,8 +26,10 @@ http://github.com/bitly/data_hacks
 
 import sys
 from decimal import Decimal
+import logging
 import math
 from optparse import OptionParser
+from collections import namedtuple
 
 class MVSD(object):
     """ A class that calculates a running Mean / Variance / Standard Deviation"""
@@ -63,6 +65,8 @@ class MVSD(object):
     def mean(self):
         return self.m
 
+DataPoint = namedtuple('DataPoint', ['value', 'count'])
+
 def test_mvsd():
     mvsd = MVSD()
     for x in range(10):
@@ -72,28 +76,35 @@ def test_mvsd():
     assert '%.2f' % mvsd.var() == "8.25"
     assert '%.14f' % mvsd.sd() == "2.87228132326901"
 
-def load_stream(input_stream):
+def load_stream(input_stream, agg):
     for line in input_stream:
         clean_line = line.strip()
         if not clean_line:
             # skip empty lines (ie: newlines)
             continue
         if clean_line[0] in ['"', "'"]:
-            clean_line = clean_line.strip('"').strip("'")
+            clean_line = clean_line.strip("\"'")
         try:
-            yield Decimal(clean_line)
+            if agg:
+                value, count = line.replace("\t", ' ').split(' ', 2)
+                yield DataPoint(Decimal(value), int(count))
+                continue
+            yield DataPoint(Decimal(clean_line), 1)
         except:
+            logging.exception('failed %r', line)
             print >>sys.stderr, "invalid line %r" % line
 
-def median(values):
+def median(values, key=None):
+    if not key:
+        key= lambda x: x
     length = len(values)
     if length%2:
         median_indeces = [length/2]
     else:
         median_indeces = [length/2-1, length/2]
 
-    values = sorted(values)
-    return sum([values[i] for i in median_indeces]) / len(median_indeces)
+    values = sorted(values, key=key)
+    return sum(map(key, [values[i] for i in median_indeces])) / len(median_indeces)
 
 def test_median():
     assert 6 == median([8,7,9,1,2,6,3]) # odd-sized list
@@ -117,11 +128,13 @@ def histogram(stream, options):
     if options.min:
         min_v = Decimal(options.min)
     else:
-        min_v = min(data)
+        min_v = min(data, key=lambda x: x.value)
+        min_v = min_v.value
     if options.max:
         max_v = Decimal(options.max)
     else:
-        max_v = max(data)
+        max_v = max(data, key=lambda x: x.value)
+        max_v = max_v.value
 
     if not max_v > min_v:
         raise ValueError('max must be > min. max:%s min:%s' % (max_v, min_v))
@@ -163,18 +176,18 @@ def histogram(stream, options):
     samples = 0
     mvsd = MVSD()
     accepted_data = []
-    for value in data:
-        samples +=1
+    for record in data:
+        samples +=  record.count
         if options.mvsd:
-            mvsd.add(value)
-            accepted_data.append(value)
+            mvsd.add(record.value, record.count)
+            accepted_data.append(record)
         # find the bucket this goes in
-        if value < min_v or value > max_v:
-            skipped +=1
+        if record.value < min_v or record.value > max_v:
+            skipped += record.count
             continue
         for bucket_postion, boundary in enumerate(boundaries):
-            if value <= boundary:
-                bucket_counts[bucket_postion] +=1
+            if record.value <= boundary:
+                bucket_counts[bucket_postion] += record.count
                 break
     
     # auto-pick the hash scale
@@ -185,7 +198,7 @@ def histogram(stream, options):
     if skipped:
         print "# %d value%s outside of min/max" % (skipped, skipped > 1 and 's' or '')
     if options.mvsd:
-        print "# Mean = %f; Variance = %f; SD = %f; Median %f" % (mvsd.mean(), mvsd.var(), mvsd.sd(), median(accepted_data))
+        print "# Mean = %f; Variance = %f; SD = %f; Median %f" % (mvsd.mean(), mvsd.var(), mvsd.sd(), median(accepted_data, key=lambda x: x.value))
     print "# each ∎ represents a count of %d" % bucket_scale
     bucket_min = min_v
     bucket_max = min_v
@@ -202,6 +215,8 @@ def histogram(stream, options):
 if __name__ == "__main__":
     parser = OptionParser()
     parser.usage = "cat data | %prog [options]"
+    parser.add_option("-a", "--agg", dest="agg", default=False, action="store_true",
+                        help="Two column input format, space seperated with key<space>value")
     parser.add_option("-m", "--min", dest="min",
                         help="minimum value for graph")
     parser.add_option("-x", "--max", dest="max",
@@ -219,5 +234,5 @@ if __name__ == "__main__":
         parser.print_usage()
         print "for more help use --help"
         sys.exit(1)
-    histogram(load_stream(sys.stdin), options)
+    histogram(load_stream(sys.stdin, options.agg), options)
 
