@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2010 bit.ly
+# Copyright 2010 Bitly
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -18,7 +18,7 @@
 """
 Generate an ascii bar chart for input data
 
-http://github.com/bitly/data_hacks
+https://github.com/bitly/data_hacks
 """
 import sys
 import math

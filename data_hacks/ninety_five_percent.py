@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # 
-# Copyright 2010 bit.ly
+# Copyright 2010 Bitly
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -17,7 +17,7 @@
 """
 Calculate the 95% time from a list of times given on stdin
 
-http://github.com/bitly/data_hacks
+https://github.com/bitly/data_hacks
 """
 
 import sys

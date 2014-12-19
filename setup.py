@@ -8,7 +8,7 @@ setup(name='data_hacks',
       description='Command line utilities for data analysis',
       author='Jehiah Czebotar',
       author_email='jehiah@gmail.com',
-      url='http://github.com/bitly/data_analysis',
+      url='https://github.com/bitly/data_hacks',
       classifiers=[
             'Development Status :: 4 - Beta',
             'Programming Language :: Python',
