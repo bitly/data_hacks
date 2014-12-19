@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2010 bit.ly
+# Copyright 2010 Bitly
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -18,7 +18,7 @@
 """
 Generate an ascii bar chart for input data
 
-http://github.com/bitly/data_hacks
+https://github.com/bitly/data_hacks
 """
 import sys
 import math
@@ -38,13 +38,17 @@ def load_stream(input_stream):
             yield clean_line
 
 def run(input_stream, options):
-    data = defaultdict(lambda:0)
+    data = defaultdict(int)
+    total = 0
     for row in input_stream:
         if options.agg_values:
             kv = row.replace('\t', ' ').split(' ',2);
-            data[kv[0]]+= int(kv[1])
+            value = int(kv[1])
+            data[kv[0]] += value
+            total += value
         else:
-            data[row]+=1
+            data[row] += 1
+            total += 1
     
     if not data:
         print "Error: no data"
@@ -57,7 +61,7 @@ def run(input_stream, options):
     scale = int(math.ceil(float(max_value) / value_characters))
     scale = max(1, scale)
     
-    print "# each ∎ represents a count of %d" % scale
+    print "# each ∎ represents a count of %d. total %d" % (scale, total)
     
     if options.sort_values:
         data = [[value, key] for key, value in data.items()]
@@ -71,9 +75,12 @@ def run(input_stream, options):
         else:
             data.sort(key=lambda x: x[1], reverse=options.reverse_sort)
     
-    format = "%" + str(max_length) + "s [%6d] %s"
-    for value,key in data:
-        print format % (key[:max_length], value, (value / scale) * "∎")
+    str_format = "%" + str(max_length) + "s [%6d] %s%s"
+    percentage = ""
+    for value, key in data:
+        if options.percentage:
+            percentage = " (%0.2f%%)" % (100 * Decimal(value) / Decimal(total))
+        print str_format % (key[:max_length], value, (value / scale) * "∎", percentage)
 
 if __name__ == "__main__":
     parser = OptionParser()
@@ -88,6 +95,8 @@ if __name__ == "__main__":
                         help="reverse the sort")
     parser.add_option("-n", "--numeric-sort", dest="numeric_sort", default=False, action="store_true",
                         help="sort keys by numeric sequencing")
+    parser.add_option("-p", "--percentage", dest="percentage", default=False, action="store_true",
+                        help="List percentage for each bar")
     
     (options, args) = parser.parse_args()
     

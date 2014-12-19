@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # 
-# Copyright 2010 bit.ly
+# Copyright 2010 Bitly
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -17,7 +17,7 @@
 """
 Pass through a sampled percentage of data
 
-http://github.com/bitly/data_hacks
+https://github.com/bitly/data_hacks
 """
 
 import sys

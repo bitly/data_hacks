@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # 
-# Copyright 2010 bit.ly
+# Copyright 2010 Bitly
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -21,7 +21,7 @@ Generate a text format histogram
 This is a loose port to python of the Perl version at
 http://www.pandamatak.com/people/anand/xfer/histo
 
-http://github.com/bitly/data_hacks
+https://github.com/bitly/data_hacks
 """
 
 import sys
@@ -202,6 +202,8 @@ def histogram(stream, options):
     print "# each ∎ represents a count of %d" % bucket_scale
     bucket_min = min_v
     bucket_max = min_v
+    percentage = ""
+    format_string = options.format + ' - ' + options.format + ' [%6d]: %s%s'
     for bucket in range(buckets):
         bucket_min = bucket_max
         bucket_max = boundaries[bucket]
@@ -209,7 +211,9 @@ def histogram(stream, options):
         star_count = 0
         if bucket_count:
             star_count = bucket_count / bucket_scale
-        print '%10.4f - %10.4f [%6d]: %s' % (bucket_min, bucket_max, bucket_count, '∎' * star_count)
+        if options.percentage:
+            percentage = " (%0.2f%%)" % (100 * Decimal(bucket_count) / Decimal(samples))
+        print format_string % (bucket_min, bucket_max, bucket_count, '∎' * star_count, percentage)
         
 
 if __name__ == "__main__":
@@ -227,6 +231,10 @@ if __name__ == "__main__":
                         help="Comma seperated list of bucket edges for the histogram")
     parser.add_option("--no-mvsd", dest="mvsd", action="store_false", default=True,
                         help="Disable the calculation of Mean, Variance and SD (improves performance)")
+    parser.add_option("-f", "--bucket-format", dest="format", default="%10.4f",
+                        help="format for bucket numbers")
+    parser.add_option("-p", "--percentage", dest="percentage", default=False, action="store_true",
+                        help="List percentage for each bar")
 
     (options, args) = parser.parse_args()
     if sys.stdin.isatty():
