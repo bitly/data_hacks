@@ -41,10 +41,15 @@ def run(input_stream, options):
     data = defaultdict(int)
     total = 0
     for row in input_stream:
-        if options.agg_values:
-            kv = row.replace('\t', ' ').split(' ',2);
+        if options.agg_key_value:
+            kv = row.rstrip().rsplit(None, 1)
             value = int(kv[1])
             data[kv[0]] += value
+            total += value
+        elif options.agg_value_key:
+            kv = row.lstrip().split(None, 1)
+            value = int(kv[0])
+            data[kv[1]] += value
             total += value
         else:
             data[row] += 1
@@ -85,7 +90,9 @@ def run(input_stream, options):
 if __name__ == "__main__":
     parser = OptionParser()
     parser.usage = "cat data | %prog [options]"
-    parser.add_option("-a", "--agg-values", dest="agg_values", default=False, action="store_true",
+    parser.add_option("-a", "--agg", dest="agg_value_key", default=False, action="store_true",
+                        help="Two column input format, space seperated with value<space>key")
+    parser.add_option("-A", "--agg-key-value", dest="agg_key_value", default=False, action="store_true",
                         help="Two column input format, space seperated with key<space>value")
     parser.add_option("-k", "--sort-keys", dest="sort_keys", default=True, action="store_true",
                         help="sort by the key [default]")

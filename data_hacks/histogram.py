@@ -76,7 +76,7 @@ def test_mvsd():
     assert '%.2f' % mvsd.var() == "8.25"
     assert '%.14f' % mvsd.sd() == "2.87228132326901"
 
-def load_stream(input_stream, agg):
+def load_stream(input_stream, agg_value_key, agg_key_value):
     for line in input_stream:
         clean_line = line.strip()
         if not clean_line:
@@ -85,11 +85,14 @@ def load_stream(input_stream, agg):
         if clean_line[0] in ['"', "'"]:
             clean_line = clean_line.strip("\"'")
         try:
-            if agg:
-                value, count = line.replace("\t", ' ').split(' ', 2)
-                yield DataPoint(Decimal(value), int(count))
-                continue
-            yield DataPoint(Decimal(clean_line), 1)
+            if agg_key_value:
+                key, value = clean_line.rstrip().rsplit(None, 1)
+                yield DataPoint(Decimal(key), int(value))
+            elif agg_value_key:
+                value, key = clean_line.lstrip().split(None, 1)
+                yield DataPoint(Decimal(key), int(value))
+            else:
+                yield DataPoint(Decimal(clean_line), 1)
         except:
             logging.exception('failed %r', line)
             print >>sys.stderr, "invalid line %r" % line
@@ -219,7 +222,9 @@ def histogram(stream, options):
 if __name__ == "__main__":
     parser = OptionParser()
     parser.usage = "cat data | %prog [options]"
-    parser.add_option("-a", "--agg", dest="agg", default=False, action="store_true",
+    parser.add_option("-a", "--agg", dest="agg_value_key", default=False, action="store_true",
+                        help="Two column input format, space seperated with value<space>key")
+    parser.add_option("-A", "--agg-key-value", dest="agg_key_value", default=False, action="store_true",
                         help="Two column input format, space seperated with key<space>value")
     parser.add_option("-m", "--min", dest="min",
                         help="minimum value for graph")
@@ -242,5 +247,5 @@ if __name__ == "__main__":
         parser.print_usage()
         print "for more help use --help"
         sys.exit(1)
-    histogram(load_stream(sys.stdin, options.agg), options)
+    histogram(load_stream(sys.stdin, options.agg_value_key, options.agg_key_value), options)
 
