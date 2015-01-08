@@ -73,8 +73,8 @@ Generate an ascii bar chart for input data (this is like a visualization of `uni
     14:40 [    49] ∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎∎
     14:41 [    14] ∎∎∎∎∎∎∎∎∎∎∎∎∎∎
 
-bar_chart.py also supports ingesting aggregated values. Simply provide a two column input of key<space>value:
+`bar_chart.py` and `histogram.py` also support ingesting pre-aggregated values. Simply provide a two column input of `count<whitespace>value` for `-a` or `value<whitespace>count` for `-A`:
 
-    $ cat data | uniq -c | bar_chart.py --sort-keys --agg-values
+    $ cat data | uniq -c | bar_chart.py -a
 
 This is very convenient if you pull data out, say Hadoop or MySQL already aggregated.
