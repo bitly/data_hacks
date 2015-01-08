@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 
-version = "0.2"
+version = "0.3.1"
 setup(name='data_hacks',
       version=version,
       description='Command line utilities for data analysis',
