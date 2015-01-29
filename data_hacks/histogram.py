@@ -151,9 +151,10 @@ def histogram(stream, options):
         bound = options.custbuckets.split(',')
         bound_sort = sorted(map(Decimal, bound))
 
-        # if the last value is smaller than the maximum, replace it
+        # if the last value is smaller than the maximum,
+        # add the maximum value to the list
         if bound_sort[-1] < max_v:
-            bound_sort[-1] = max_v
+            bound_sort.append(max_v)
         
         # iterate through the sorted list and append to boundaries
         for x in bound_sort:
