@@ -166,6 +166,21 @@ def histogram(stream, options):
         # beware: the min_v is not included in the boundaries, so no need to do a -1!
         bucket_counts = [0 for x in range(len(boundaries))]
         buckets = len(boundaries)
+    elif options.logscale:
+        buckets = options.buckets and int(options.buckets) or 10
+        if buckets <= 0:
+            raise ValueError('# of buckets must be > 0')
+        fx = lambda k, n: n/(2**(k+1)-1)
+        def log_steps(k, n):
+            "k logarithmic steps whose sum is n"
+            x = fx(k-1, n)
+            sum = 0
+            for i in range(k):
+                sum += 2**i * x
+                yield sum
+        bucket_counts = [0 for x in range(buckets)]
+        for step in log_steps(buckets, diff):
+            boundaries.append(min_v + step)
     else:
         buckets = options.buckets and int(options.buckets) or 10
         if buckets <= 0:
@@ -232,6 +247,8 @@ if __name__ == "__main__":
                         help="maximum value for graph")
     parser.add_option("-b", "--buckets", dest="buckets",
                         help="Number of buckets to use for the histogram")
+    parser.add_option("-l", "--logscale", dest="logscale", default=False, action="store_true",
+                        help="Buckets grow in logarithmic scale")
     parser.add_option("-B", "--custom-buckets", dest="custbuckets",
                         help="Comma seperated list of bucket edges for the histogram")
     parser.add_option("--no-mvsd", dest="mvsd", action="store_false", default=True,
