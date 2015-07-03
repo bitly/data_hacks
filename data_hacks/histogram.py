@@ -179,12 +179,21 @@ def histogram(stream, options):
         if buckets <= 0:
             raise ValueError('# of buckets must be > 0')
 
-        def fx(k, n):
+        def first_bucket_size(k, n):
+            """Logarithmic buckets means, the size of bucket i+1 is twice
+            the size of bucket i.
+            For k+1 buckets whose sum is n, we have
+            (note, k+1 buckets, since 0 is counted as well):
+                \sum_{i=0}^{k} x*2^i   = n
+                x * \sum_{i=0}^{k} 2^i = n
+                x * (2^{k+1} - 1)      = n
+                x = n/(2^{k+1} - 1)
+            """
             return n/(2**(k+1)-1)
 
         def log_steps(k, n):
             "k logarithmic steps whose sum is n"
-            x = fx(k-1, n)
+            x = first_bucket_size(k-1, n)
             sum = 0
             for i in range(k):
                 sum += 2**i * x
