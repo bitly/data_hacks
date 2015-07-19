@@ -86,6 +86,10 @@ def run(input_stream, options):
         if options.percentage:
             percentage = " (%0.2f%%)" % (100 * Decimal(value) / Decimal(total))
         print str_format % (key[:max_length], value, (value / scale) * "∎", percentage)
+        try:
+            sys.stdout.flush()
+        except IOError:
+            pass
 
 if __name__ == "__main__":
     parser = OptionParser()
