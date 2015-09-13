@@ -20,6 +20,7 @@ Pass through a sampled percentage of data
 https://github.com/bitly/data_hacks
 """
 
+import errno
 import sys
 import random
 from optparse import OptionParser
@@ -29,7 +30,13 @@ def run(sample_rate):
     input_stream = sys.stdin
     for line in input_stream:
         if random.randint(1,100) <= sample_rate:
-            sys.stdout.write(line)
+            try:
+                sys.stdout.write(line)
+            except IOError, e:
+                if e.errno == errno.EPIPE:
+                    return
+                else:
+                    raise
 
 def get_sample_rate(rate_string):
     """ return a rate as a percentage"""
