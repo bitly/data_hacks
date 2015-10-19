@@ -18,7 +18,7 @@ A utility that parses input data points and outputs a text histogram
 
 Example:
 
-    $ cat /tmp/data | histogram.py --percentage --max=1000 --min=0
+    $ cat 'f = open('data_example.txt', 'w')\n for i in range(60):\n f.write(str(random.randint(0, 1000))+'\n')\n f.close()' | histogram.py --percentage --max=1000 --min=0
     # NumSamples = 60; Min = 0.00; Max = 1000.00
     # 1 value outside of min/max
     # Mean = 332.666667; Variance = 471056.055556; SD = 686.335236; Median 191.000000
