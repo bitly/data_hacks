@@ -66,7 +66,7 @@ def run(input_stream, options):
     scale = int(math.ceil(float(max_value) / value_characters))
     scale = max(1, scale)
     
-    print "# each ∎ represents a count of %d. total %d" % (scale, total)
+    print "# each " + options.dot + " represents a count of %d. total %d" % (scale, total)
     
     if options.sort_values:
         data = [[value, key] for key, value in data.items()]
@@ -85,7 +85,7 @@ def run(input_stream, options):
     for value, key in data:
         if options.percentage:
             percentage = " (%0.2f%%)" % (100 * Decimal(value) / Decimal(total))
-        print str_format % (key[:max_length], value, (value / scale) * "∎", percentage)
+        print str_format % (key[:max_length], value, (value / scale) * options.dot, percentage)
 
 if __name__ == "__main__":
     parser = OptionParser()
@@ -104,7 +104,8 @@ if __name__ == "__main__":
                         help="sort keys by numeric sequencing")
     parser.add_option("-p", "--percentage", dest="percentage", default=False, action="store_true",
                         help="List percentage for each bar")
-    
+    parser.add_option("--dot", dest="dot", default='∎', help="Dot representation")
+
     (options, args) = parser.parse_args()
     
     if sys.stdin.isatty():
