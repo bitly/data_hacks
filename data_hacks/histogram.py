@@ -241,7 +241,7 @@ def histogram(stream, options):
         print("# Mean = %f; Variance = %f; SD = %f; Median %f" %
               (mvsd.mean(), mvsd.var(), mvsd.sd(),
                median(accepted_data, key=lambda x: x.value)))
-    print "# each ∎ represents a count of %d" % bucket_scale
+    print "# each " + options.dot + " represents a count of %d" % bucket_scale
     bucket_min = min_v
     bucket_max = min_v
     percentage = ""
@@ -256,7 +256,7 @@ def histogram(stream, options):
         if options.percentage:
             percentage = " (%0.2f%%)" % (100 * Decimal(bucket_count) /
                                          Decimal(samples))
-        print format_string % (bucket_min, bucket_max, bucket_count, '∎' *
+        print format_string % (bucket_min, bucket_max, bucket_count, options.dot *
                                star_count, percentage)
 
 
@@ -288,6 +288,7 @@ if __name__ == "__main__":
                       help="format for bucket numbers")
     parser.add_option("-p", "--percentage", dest="percentage", default=False,
                       action="store_true", help="List percentage for each bar")
+    parser.add_option("--dot", dest="dot", default='∎', help="Dot representation")
 
     (options, args) = parser.parse_args()
     if sys.stdin.isatty():
