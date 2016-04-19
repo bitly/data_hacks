@@ -54,20 +54,20 @@ def run(input_stream, options):
         else:
             data[row] += 1
             total += 1
-    
+
     if not data:
-        print "Error: no data"
+        print("Error: no data")
         sys.exit(1)
-    
+
     max_length = max([len(key) for key in data.keys()])
     max_length = min(max_length, 50)
     value_characters = 80 - max_length
     max_value = max(data.values())
     scale = int(math.ceil(float(max_value) / value_characters))
     scale = max(1, scale)
-    
-    print "# each " + options.dot + " represents a count of %d. total %d" % (scale, total)
-    
+
+    print("# each " + options.dot + " represents a count of %d. total %d" % (scale, total))
+
     if options.sort_values:
         data = [[value, key] for key, value in data.items()]
         data.sort(key=lambda x: x[0], reverse=options.reverse_sort)
@@ -79,13 +79,13 @@ def run(input_stream, options):
             data.sort(key=lambda x: (Decimal(x[1])), reverse=options.reverse_sort)
         else:
             data.sort(key=lambda x: x[1], reverse=options.reverse_sort)
-    
+
     str_format = "%" + str(max_length) + "s [%6d] %s%s"
     percentage = ""
     for value, key in data:
         if options.percentage:
             percentage = " (%0.2f%%)" % (100 * Decimal(value) / Decimal(total))
-        print str_format % (key[:max_length], value, (value / scale) * options.dot, percentage)
+        print(str_format % (key[:max_length], value, (value // scale) * options.dot, percentage))
 
 if __name__ == "__main__":
     parser = OptionParser()
@@ -107,10 +107,9 @@ if __name__ == "__main__":
     parser.add_option("--dot", dest="dot", default='∎', help="Dot representation")
 
     (options, args) = parser.parse_args()
-    
+
     if sys.stdin.isatty():
         parser.print_usage()
-        print "for more help use --help"
+        print("for more help use --help")
         sys.exit(1)
     run(load_stream(sys.stdin), options)
-
