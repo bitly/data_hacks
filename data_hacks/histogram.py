@@ -104,10 +104,10 @@ def median(values, key=None):
     if not key:
         key = None  # map and sort accept None as identity
     length = len(values)
-    if length % 2:
-        median_indeces = [length/2]
+    if length % 2 == 0:
+        median_indeces = [length//2]
     else:
-        median_indeces = [length/2-1, length/2]
+        median_indeces = [length//2-1, length//2]
 
     values = sorted(values, key=key)
     return sum(map(key,
@@ -252,7 +252,7 @@ def histogram(stream, options):
         bucket_count = bucket_counts[bucket]
         star_count = 0
         if bucket_count:
-            star_count = bucket_count / bucket_scale
+            star_count = bucket_count // bucket_scale
         if options.percentage:
             percentage = " (%0.2f%%)" % (100 * Decimal(bucket_count) /
                                          Decimal(samples))
