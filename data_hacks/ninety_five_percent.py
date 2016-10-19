@@ -34,10 +34,10 @@ def run():
             continue
         try:
             t = Decimal(line)
+            count +=1
+            data[t] = data.get(t, 0) + 1
         except:
             print >>sys.stderr, "invalid line %r" % line
-        count +=1
-        data[t] = data.get(t, 0) + 1
     print calc_95(data, count)
         
 def calc_95(data, count):
