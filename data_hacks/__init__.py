@@ -2,7 +2,8 @@
 from __future__ import absolute_import
 from data_hacks.bar_chart import run as bar_chart
 from data_hacks import histogram as hist
-
+from data_hacks.ninety_five_percent import run as ninety_five_percent
+from data_hacks.sample import run as sample
 
 class BarChartOpt(object):
     def __init__(
