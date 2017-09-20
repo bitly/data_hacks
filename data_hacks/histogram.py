@@ -121,27 +121,29 @@ def test_median():
     assert "4.50" == "%.2f" % median([4.0, 5, 2, 1, 9, 10])
 
 
-def histogram(stream, options):
+def _histogram(stream, minimum=None, maximum=None, num_buckets=None, logscale=False,
+               custbuckets=None, calc_mvsd=True,
+               bucket_format='%10.4f', calc_percentage=False, dot='∎'):
     """
     Loop over the stream and add each entry to the dataset, printing out at the
     end.
 
     stream yields Decimal()
     """
-    if not options.min or not options.max:
+    if not minimum or not maximum:
         # glob the iterator here so we can do min/max on it
         data = list(stream)
     else:
         data = stream
     bucket_scale = 1
 
-    if options.min:
-        min_v = Decimal(options.min)
+    if minimum:
+        min_v = Decimal(minimum)
     else:
         min_v = min(data, key=lambda x: x.value)
         min_v = min_v.value
-    if options.max:
-        max_v = Decimal(options.max)
+    if maximum:
+        max_v = Decimal(maximum)
     else:
         max_v = max(data, key=lambda x: x.value)
         max_v = max_v.value
@@ -151,11 +153,9 @@ def histogram(stream, options):
     diff = max_v - min_v
 
     boundaries = []
-    bucket_counts = []
-    buckets = 0
 
-    if options.custbuckets:
-        bound = options.custbuckets.split(',')
+    if custbuckets:
+        bound = custbuckets.split(',')
         bound_sort = sorted(map(Decimal, bound))
 
         # if the last value is smaller than the maximum, replace it
@@ -174,8 +174,8 @@ def histogram(stream, options):
         # so no need to do a -1!
         bucket_counts = [0 for x in range(len(boundaries))]
         buckets = len(boundaries)
-    elif options.logscale:
-        buckets = options.buckets and int(options.buckets) or 10
+    elif logscale:
+        buckets = num_buckets and int(num_buckets) or 10
         if buckets <= 0:
             raise ValueError('# of buckets must be > 0')
 
@@ -202,7 +202,7 @@ def histogram(stream, options):
         for step in log_steps(buckets, diff):
             boundaries.append(min_v + step)
     else:
-        buckets = options.buckets and int(options.buckets) or 10
+        buckets = num_buckets and int(num_buckets) or 10
         if buckets <= 0:
             raise ValueError('# of buckets must be > 0')
         step = diff / buckets
@@ -216,7 +216,7 @@ def histogram(stream, options):
     accepted_data = []
     for record in data:
         samples += record.count
-        if options.mvsd:
+        if calc_mvsd:
             mvsd.add(record.value, record.count)
             accepted_data.append(record)
         # find the bucket this goes in
@@ -237,15 +237,14 @@ def histogram(stream, options):
     if skipped:
         print("# %d value%s outside of min/max" %
               (skipped, skipped > 1 and 's' or ''))
-    if options.mvsd:
+    if calc_mvsd:
         print("# Mean = %f; Variance = %f; SD = %f; Median %f" %
               (mvsd.mean(), mvsd.var(), mvsd.sd(),
                median(accepted_data, key=lambda x: x.value)))
-    print "# each " + options.dot + " represents a count of %d" % bucket_scale
-    bucket_min = min_v
+    print "# each " + dot + " represents a count of %d" % bucket_scale
     bucket_max = min_v
     percentage = ""
-    format_string = options.format + ' - ' + options.format + ' [%6d]: %s%s'
+    format_string = bucket_format + ' - ' + bucket_format + ' [%6d]: %s%s'
     for bucket in range(buckets):
         bucket_min = bucket_max
         bucket_max = boundaries[bucket]
@@ -253,11 +252,22 @@ def histogram(stream, options):
         star_count = 0
         if bucket_count:
             star_count = bucket_count / bucket_scale
-        if options.percentage:
+        if calc_percentage:
             percentage = " (%0.2f%%)" % (100 * Decimal(bucket_count) /
                                          Decimal(samples))
-        print format_string % (bucket_min, bucket_max, bucket_count, options.dot *
+        print format_string % (bucket_min, bucket_max, bucket_count, dot *
                                star_count, percentage)
+
+
+def histogram(stream, options):
+    _histogram(stream, options.min, options.max, options.buckets, options.logscale,
+               options.custbuckets, options.mvsd, options.format, options.percentage,
+               options.dot)
+
+
+def print_histogram(samples, **kwargs):
+    stream = [str(x) for x in samples]
+    _histogram(load_stream(stream, False, False), **kwargs)
 
 
 if __name__ == "__main__":
