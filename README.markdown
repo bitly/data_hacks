@@ -61,7 +61,7 @@ This is useful for finding the 95% response time from access logs.
 
 Example (assuming response time is the last column in your access log):
 
-    $ cat access.log | awk '{print $NF}' | ninety_five_percent.py
+    $ awk '{print $NF}' /path/to/access.log | ninety_five_percent.py
     
 sample.py
 ---------
@@ -93,6 +93,6 @@ Generate an ascii bar chart for input data (this is like a visualization of `uni
 
 `bar_chart.py` and `histogram.py` also support ingesting pre-aggregated values. Simply provide a two column input of `count<whitespace>value` for `-a` or `value<whitespace>count` for `-A`:
 
-    $ cat data | uniq -c | bar_chart.py -a
+    $ sort /path/to/data | uniq -c | bar_chart.py -a
 
 This is very convenient if you pull data out, say Hadoop or MySQL already aggregated.
