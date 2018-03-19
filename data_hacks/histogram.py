@@ -24,6 +24,7 @@ http://www.pandamatak.com/people/anand/xfer/histo
 https://github.com/bitly/data_hacks
 """
 
+from __future__ import print_function
 import sys
 from decimal import Decimal
 import logging
@@ -97,7 +98,7 @@ def load_stream(input_stream, agg_value_key, agg_key_value):
                 yield DataPoint(Decimal(clean_line), 1)
         except:
             logging.exception('failed %r', line)
-            print >>sys.stderr, "invalid line %r" % line
+            print("invalid line %r" % line, file=sys.stderr)
 
 
 def median(values, key=None):
@@ -121,7 +122,7 @@ def test_median():
     assert "4.50" == "%.2f" % median([4.0, 5, 2, 1, 9, 10])
 
 
-def histogram(stream, options):
+def histogram(stream, options, output=sys.stdout):
     """
     Loop over the stream and add each entry to the dataset, printing out at the
     end.
@@ -233,15 +234,17 @@ def histogram(stream, options):
         bucket_scale = int(max(bucket_counts) / 75)
 
     print("# NumSamples = %d; Min = %0.2f; Max = %0.2f" %
-          (samples, min_v, max_v))
+          (samples, min_v, max_v), file=output)
     if skipped:
         print("# %d value%s outside of min/max" %
-              (skipped, skipped > 1 and 's' or ''))
+              (skipped, skipped > 1 and 's' or ''), file=output)
     if options.mvsd:
         print("# Mean = %f; Variance = %f; SD = %f; Median %f" %
               (mvsd.mean(), mvsd.var(), mvsd.sd(),
-               median(accepted_data, key=lambda x: x.value)))
-    print "# each " + options.dot + " represents a count of %d" % bucket_scale
+               median(accepted_data, key=lambda x: x.value)), file=output)
+    print(
+        "# each " + options.dot + " represents a count of %d" % bucket_scale,
+        file=output)
     bucket_min = min_v
     bucket_max = min_v
     percentage = ""
@@ -256,8 +259,8 @@ def histogram(stream, options):
         if options.percentage:
             percentage = " (%0.2f%%)" % (100 * Decimal(bucket_count) /
                                          Decimal(samples))
-        print format_string % (bucket_min, bucket_max, bucket_count, options.dot *
-                               star_count, percentage)
+        print(format_string % (bucket_min, bucket_max, bucket_count, options.dot *
+                               star_count, percentage), file=output)
 
 
 if __name__ == "__main__":
@@ -294,7 +297,7 @@ if __name__ == "__main__":
     if sys.stdin.isatty():
         # if isatty() that means it's run without anything piped into it
         parser.print_usage()
-        print "for more help use --help"
+        print("for more help use --help")
         sys.exit(1)
     histogram(load_stream(sys.stdin, options.agg_value_key,
                           options.agg_key_value), options)
