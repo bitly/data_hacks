@@ -249,8 +249,7 @@ def histogram(stream, options):
         if bucket_count:
             star_count = bucket_count / bucket_scale
         if options.percentage:
-            percentage = f" {(100 * Decimal(bucket_count) /
-                                         Decimal(samples)):.2f}"
+            percentage = f" {(100 * Decimal(bucket_count) / Decimal(samples)):.2f}"
         print f"{bucket_min:{options.format}} - {bucket_max:{options.format}} [{bucket_count:6d}]: {options.dot * star_count}{percentage}"
 
 
