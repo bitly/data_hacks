@@ -73,9 +73,9 @@ def test_mvsd():
     for x in range(10):
         mvsd.add(x)
 
-    assert '%.2f' % mvsd.mean() == "4.50"
-    assert '%.2f' % mvsd.var() == "8.25"
-    assert '%.14f' % mvsd.sd() == "2.87228132326901"
+    assert f"{mvsd.mean():.2f}" == "4.50"
+    assert f"{mvsd.var():.2f}" == "8.25"
+    assert f"{mvsd.sd():.14f}" == "2.87228132326901"
 
 
 def load_stream(input_stream, agg_value_key, agg_key_value):
@@ -96,8 +96,8 @@ def load_stream(input_stream, agg_value_key, agg_key_value):
             else:
                 yield DataPoint(Decimal(clean_line), 1)
         except:
-            logging.exception('failed %r', line)
-            print >>sys.stderr, "invalid line %r" % line
+            logging.exception(f"failed {line}")
+            print(f"invalid line {line}", sys.stderr)
 
 
 def median(values, key=None):
@@ -111,14 +111,14 @@ def median(values, key=None):
 
     values = sorted(values, key=key)
     return sum(map(key,
-                   [values[i] for i in median_indeces])) / len(median_indeces)
+                   [values[int(i)] for i in median_indeces])) / len(median_indeces)
 
 
 def test_median():
     assert 6 == median([8, 7, 9, 1, 2, 6, 3])  # odd-sized list
     assert 4 == median([4, 5, 2, 1, 9, 10])  # even-sized int list. (4+5)/2 = 4
     # even-sized float list. (4.0+5)/2 = 4.5
-    assert "4.50" == "%.2f" % median([4.0, 5, 2, 1, 9, 10])
+    assert "4.50" == f"{median([4.0, 5, 2, 1, 9, 10]):.2f}"
 
 
 def histogram(stream, options):
@@ -147,7 +147,7 @@ def histogram(stream, options):
         max_v = max_v.value
 
     if not max_v > min_v:
-        raise ValueError('max must be > min. max:%s min:%s' % (max_v, min_v))
+        raise ValueError(f"max must be > min. max:{max_v} min:{min_v}")
     diff = max_v - min_v
 
     boundaries = []
@@ -232,20 +232,15 @@ def histogram(stream, options):
     if max(bucket_counts) > 75:
         bucket_scale = int(max(bucket_counts) / 75)
 
-    print("# NumSamples = %d; Min = %0.2f; Max = %0.2f" %
-          (samples, min_v, max_v))
+    print(f"# NumSamples = {samples}; Min = {min_v:.2f}; Max = {max_v:.2f}")
     if skipped:
-        print("# %d value%s outside of min/max" %
-              (skipped, skipped > 1 and 's' or ''))
+        print(f"# {skipped} value{skipped > 1 and 's' or ''} outside of min/max")
     if options.mvsd:
-        print("# Mean = %f; Variance = %f; SD = %f; Median %f" %
-              (mvsd.mean(), mvsd.var(), mvsd.sd(),
-               median(accepted_data, key=lambda x: x.value)))
-    print "# each " + options.dot + " represents a count of %d" % bucket_scale
+        print(f"# Mean = {mvsd.mean()}; Variance = {mvsd.var()}; SD = {mvsd.sd()}; Median {median(accepted_data, key=lambda x: x.value)}")
+    print(f"# each {options.dot} represents a count of {bucket_scale}")
     bucket_min = min_v
     bucket_max = min_v
     percentage = ""
-    format_string = options.format + ' - ' + options.format + ' [%6d]: %s%s'
     for bucket in range(buckets):
         bucket_min = bucket_max
         bucket_max = boundaries[bucket]
@@ -254,10 +249,8 @@ def histogram(stream, options):
         if bucket_count:
             star_count = bucket_count / bucket_scale
         if options.percentage:
-            percentage = " (%0.2f%%)" % (100 * Decimal(bucket_count) /
-                                         Decimal(samples))
-        print format_string % (bucket_min, bucket_max, bucket_count, options.dot *
-                               star_count, percentage)
+            percentage = f" {(100 * Decimal(bucket_count) / Decimal(samples)):.2f}"
+        print(f"{bucket_min:{options.format}} - {bucket_max:{options.format}} [{bucket_count:6d}]: {options.dot * int(star_count)}{percentage}")
 
 
 if __name__ == "__main__":
@@ -284,7 +277,7 @@ if __name__ == "__main__":
     parser.add_option("--no-mvsd", dest="mvsd", action="store_false",
                       default=True, help="Disable the calculation of Mean, " +
                       "Variance and SD (improves performance)")
-    parser.add_option("-f", "--bucket-format", dest="format", default="%10.4f",
+    parser.add_option("-f", "--bucket-format", dest="format", default="10.4f",
                       help="format for bucket numbers")
     parser.add_option("-p", "--percentage", dest="percentage", default=False,
                       action="store_true", help="List percentage for each bar")
@@ -294,7 +287,7 @@ if __name__ == "__main__":
     if sys.stdin.isatty():
         # if isatty() that means it's run without anything piped into it
         parser.print_usage()
-        print "for more help use --help"
+        print("for more help use --help")
         sys.exit(1)
     histogram(load_stream(sys.stdin, options.agg_value_key,
                           options.agg_key_value), options)
