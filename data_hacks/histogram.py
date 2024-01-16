@@ -97,7 +97,7 @@ def load_stream(input_stream, agg_value_key, agg_key_value):
                 yield DataPoint(Decimal(clean_line), 1)
         except:
             logging.exception(f"failed {line:r}")
-            print >>sys.stderr, f"invalid line {line:r}"
+            print(f"invalid line {line:r}", sys.stderr)
 
 
 def median(values, key=None):
@@ -250,7 +250,7 @@ def histogram(stream, options):
             star_count = bucket_count / bucket_scale
         if options.percentage:
             percentage = f" {(100 * Decimal(bucket_count) / Decimal(samples)):.2f}"
-        print f"{bucket_min:{options.format}} - {bucket_max:{options.format}} [{bucket_count:6d}]: {options.dot * star_count}{percentage}"
+        print(f"{bucket_min:{options.format}} - {bucket_max:{options.format}} [{bucket_count:6d}]: {options.dot * star_count}{percentage}")
 
 
 if __name__ == "__main__":
@@ -287,7 +287,7 @@ if __name__ == "__main__":
     if sys.stdin.isatty():
         # if isatty() that means it's run without anything piped into it
         parser.print_usage()
-        print "for more help use --help"
+        print("for more help use --help")
         sys.exit(1)
     histogram(load_stream(sys.stdin, options.agg_value_key,
                           options.agg_key_value), options)
