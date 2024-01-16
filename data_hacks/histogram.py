@@ -96,8 +96,8 @@ def load_stream(input_stream, agg_value_key, agg_key_value):
             else:
                 yield DataPoint(Decimal(clean_line), 1)
         except:
-            logging.exception(f"failed {line:r}")
-            print(f"invalid line {line:r}", sys.stderr)
+            logging.exception(f"failed {line}")
+            print(f"invalid line {line}", sys.stderr)
 
 
 def median(values, key=None):
@@ -111,7 +111,7 @@ def median(values, key=None):
 
     values = sorted(values, key=key)
     return sum(map(key,
-                   [values[i] for i in median_indeces])) / len(median_indeces)
+                   [values[int(i)] for i in median_indeces])) / len(median_indeces)
 
 
 def test_median():
@@ -250,7 +250,7 @@ def histogram(stream, options):
             star_count = bucket_count / bucket_scale
         if options.percentage:
             percentage = f" {(100 * Decimal(bucket_count) / Decimal(samples)):.2f}"
-        print(f"{bucket_min:{options.format}} - {bucket_max:{options.format}} [{bucket_count:6d}]: {options.dot * star_count}{percentage}")
+        print(f"{bucket_min:{options.format}} - {bucket_max:{options.format}} [{bucket_count:6d}]: {options.dot * int(star_count)}{percentage}")
 
 
 if __name__ == "__main__":
