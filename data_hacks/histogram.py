@@ -241,7 +241,6 @@ def histogram(stream, options):
     bucket_min = min_v
     bucket_max = min_v
     percentage = ""
-    format_string = 
     for bucket in range(buckets):
         bucket_min = bucket_max
         bucket_max = boundaries[bucket]
