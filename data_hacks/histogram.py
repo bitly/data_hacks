@@ -73,9 +73,9 @@ def test_mvsd():
     for x in range(10):
         mvsd.add(x)
 
-    assert f"{mvsd.mean().2f}" == "4.50"
-    assert f"{mvsd.var().2f}" == "8.25"
-    assert f"{mvsd.sd().14f}" == "2.87228132326901"
+    assert f"{mvsd.mean():.2f}" == "4.50"
+    assert f"{mvsd.var():.2f}" == "8.25"
+    assert f"{mvsd.sd():.14f}" == "2.87228132326901"
 
 
 def load_stream(input_stream, agg_value_key, agg_key_value):
