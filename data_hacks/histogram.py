@@ -180,7 +180,7 @@ def histogram(stream, options):
             raise ValueError('# of buckets must be > 0')
 
         def first_bucket_size(k, n):
-            """Logarithmic buckets means, the size of bucket i+1 is twice
+            r"""Logarithmic buckets means, the size of bucket i+1 is twice
             the size of bucket i.
             For k+1 buckets whose sum is n, we have
             (note, k+1 buckets, since 0 is counted as well):
